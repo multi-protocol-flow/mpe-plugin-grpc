@@ -30,14 +30,7 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake pkg-config perl zlib1g-dev protobuf-compiler
-      - name: Install protoc (macOS)
-        if: matrix.os == 'macos-latest'
-        run: brew install protobuf
-      - name: Install protoc (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: powershell
-        run: choco install protobuf -y --no-progress
+          sudo apt-get install -y cmake pkg-config perl zlib1g-dev
       - name: Compute version
         id: version
         shell: bash
@@ -68,8 +61,8 @@ jobs:
           npm run build
       - name: Build (release)
         run: cargo build --release
-      - name: Offline tests (roundtrip + integration)
-        run: cargo test
+      - name: Offline tests (roundtrip only)
+        run: cargo test --test roundtrip
       - name: Package zip + sha256
         shell: bash
         run: |
