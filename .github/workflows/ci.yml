@@ -96,7 +96,3 @@ jobs:
       - uses: softprops/action-gh-release@v3.0.2
         with:
           files: dist/*
-      - name: Trigger registry sync
-        env:
-          GH_TOKEN: ${{ secrets.MPE_REGISTRY_TOKEN }}
-        run: gh workflow run sync.yml --repo multi-protocol-flow/mpe-plugin-registry --ref main
