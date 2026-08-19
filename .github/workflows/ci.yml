@@ -30,7 +30,14 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake pkg-config perl zlib1g-dev
+          sudo apt-get install -y cmake pkg-config perl zlib1g-dev protobuf-compiler
+      - name: Install protoc (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install protobuf
+      - name: Install protoc (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: powershell
+        run: choco install protobuf -y --no-progress
       - name: Compute version
         id: version
         shell: bash
