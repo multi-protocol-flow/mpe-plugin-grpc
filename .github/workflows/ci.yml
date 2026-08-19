@@ -21,7 +21,6 @@ jobs:
           - { os: ubuntu-22.04, artifact_os: linux-x64, bin: mpe_plugin_grpc }
           - { os: windows-latest, artifact_os: windows-x64, bin: mpe_plugin_grpc.exe }
           - { os: macos-latest, artifact_os: macos-x64, bin: mpe_plugin_grpc }
-          - { os: macos-latest, artifact_os: macos-arm64, bin: mpe_plugin_grpc }
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
@@ -97,3 +96,7 @@ jobs:
       - uses: softprops/action-gh-release@v3.0.2
         with:
           files: dist/*
+      - name: Trigger registry sync
+        env:
+          GH_TOKEN: ${{ secrets.MPE_REGISTRY_TOKEN }}
+        run: gh workflow run sync.yml --repo multi-protocol-flow/mpe-plugin-registry --ref main
