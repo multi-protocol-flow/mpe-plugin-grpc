@@ -39,7 +39,6 @@ Host (mpe / mpe-cli)                    Plugin process (this crate)
 mpe-plugin-grpc/
 ├── Cargo.toml            # standalone package, no host workspace dependency
 ├── plugin.json           # manifest scanned by the host (launch description, residency mode)
-├── build.rs              # compiles echo.proto for the test server (dev-tool only)
 ├── .github/workflows/ci.yml  # 4-platform build + tests + Release packaging
 ├── src/
 │   ├── main.rs           # binary entry point (rustls install + SDK event loop)
@@ -70,12 +69,8 @@ mpe-plugin-grpc/
 │   ├── viewer.html
 │   ├── panel.html
 │   └── scripts/inline.mjs
-├── tests/
-│   ├── roundtrip.rs      # offline stdio roundtrip tests (describe / failure paths)
-│   └── integration.rs    # real-server lifecycle tests (unary / streaming / reflection / cancel)
-└── src/bin/
-    ├── test_server.rs    # echo test server used by integration tests
-    └── echo.proto        # proto definition for the test server
+└── tests/
+    └── roundtrip.rs      # offline stdio roundtrip tests (describe / failure paths)
 ```
 
 ## 2. Node types
@@ -126,16 +121,9 @@ rand = "0.8"
 tokio-util = "0.7"
 tempfile = "3"
 
-[build-dependencies]
-tonic-build = "0.12"
-
 [[bin]]
 name = "mpe_plugin_grpc"
 path = "src/main.rs"
-
-[[bin]]
-name = "grpc_test_server"
-path = "src/bin/test_server.rs"
 ```
 
 ## 4. Build and test
@@ -154,8 +142,6 @@ cargo build --release
 # offline unit tests + stdio roundtrip tests (no gRPC server needed)
 cargo test
 
-# integration tests (needs the echo test server; skipped if server binary is absent)
-cargo test --test integration
 
 # frontend build (config panel + viewer)
 cd frontend && npm install && npm run build

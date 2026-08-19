@@ -29,7 +29,6 @@ Host (mpe / mpe-cli)                    Plugin process (本 crate)
 mpe-plugin-grpc/
 ├── Cargo.toml            # 独立包，不依赖宿主 workspace
 ├── plugin.json           # 宿主扫描的清单文件（启动描述、驻留模式）
-├── build.rs              # 编译 echo.proto（仅测试服务器 dev 工具依赖）
 ├── .github/workflows/ci.yml  # 4 平台构建 + 测试 + Release 打包
 ├── src/
 │   ├── main.rs           # 二进制入口（安装 rustls + SDK 事件循环）
@@ -60,12 +59,8 @@ mpe-plugin-grpc/
 │   ├── viewer.html
 │   ├── panel.html
 │   └── scripts/inline.mjs
-├── tests/
-│   ├── roundtrip.rs      # 离线 stdio roundtrip 测试（describe / 失败路径）
-│   └── integration.rs    # 真实服务器生命周期测试（unary / streaming / reflection / cancel）
-└── src/bin/
-    ├── test_server.rs    # 集成测试用的 echo 测试服务器
-    └── echo.proto        # 测试服务器的 proto 定义
+└── tests/
+    └── roundtrip.rs      # 离线 stdio roundtrip 测试（describe / 失败路径）
 ```
 
 ## 2. 节点类型
@@ -114,16 +109,9 @@ rand = "0.8"
 tokio-util = "0.7"
 tempfile = "3"
 
-[build-dependencies]
-tonic-build = "0.12"
-
 [[bin]]
 name = "mpe_plugin_grpc"
 path = "src/main.rs"
-
-[[bin]]
-name = "grpc_test_server"
-path = "src/bin/test_server.rs"
 ```
 
 ## 4. 构建与测试
@@ -137,8 +125,6 @@ cargo build --release
 # 离线单元测试 + stdio roundtrip 测试（不需要 gRPC 服务器）
 cargo test
 
-# 集成测试（需要 echo 测试服务器；服务器二进制不存在时自动跳过）
-cargo test --test integration
 
 # 前端构建（配置面板 + 报告查看器）
 cd frontend && npm install && npm run build

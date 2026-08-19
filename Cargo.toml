@@ -37,23 +37,9 @@ tempfile = "3"
 [dev-dependencies]
 # 集成测试用（当前无额外依赖）
 
-[build-dependencies]
-tonic-build = "0.12"
-
-[profile.release]
-opt-level = 3
-
 [[bin]]
 name = "mpe_plugin_grpc"
 path = "src/main.rs"
-
-# 集成测试用的 gRPC 测试服务器（tonic server，暴露 echo unary / server
-# streaming / bidi + server reflection v1）。cargo 为包内 [[bin]] 注入
-# CARGO_BIN_EXE_grpc_test_server。
-[[bin]]
-name = "grpc_test_server"
-path = "src/bin/test_server.rs"
-
 [lints.rust]
 unsafe_code = "forbid"
 
