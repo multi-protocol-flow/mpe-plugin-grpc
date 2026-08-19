@@ -1,0 +1,70 @@
+[package]
+name = "mpe-plugin-grpc"
+version = "0.1.0"
+edition = "2021"
+description = "gRPC protocol sidecar plugin: connect/call/close"
+
+[dependencies]
+# Official plugin: public SDK only, never host types (flow-engine-core etc.)
+mpe-plugin-sdk = { git = "https://github.com/multi-protocol-flow/mpe-plugin-sdk.git", tag = "v0.2.2" }
+# gRPC 依赖（从原宿主 crate flow-engine-grpc 整体迁移）
+tonic = { version = "0.12", default-features = false, features = ["prost", "transport", "tls", "tls-webpki-roots", "gzip"] }
+prost = "0.13"
+prost-reflect = { version = "0.14", features = ["serde"] }
+prost-types = "0.13"
+protox = "0.7"
+tonic-reflection = "0.12"
+tonic-health = "0.12"
+tokio-stream = { version = "0.1", features = ["net"] }
+# TLS（ring 后端，与 mcp 插件一致，避免 aws-lc-sys 在 glibc < 2.38 上链接失败）
+rustls = { version = "0.23", default-features = false, features = ["ring", "logging", "std", "tls12"] }
+rustls-pemfile = "2"
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "logging", "tls12"] }
+webpki-roots = "0.26"
+hyper-util = "0.1"
+tower = { version = "0.4", default-features = false }
+http = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+tokio = { version = "1", features = ["full"] }
+log = "0.4"
+thiserror = "1.0"
+chrono = "0.4"
+rand = "0.8"
+tokio-util = "0.7"
+tempfile = "3"
+
+[dev-dependencies]
+# 集成测试用（当前无额外依赖）
+
+[build-dependencies]
+tonic-build = "0.12"
+
+[profile.release]
+opt-level = 3
+
+[[bin]]
+name = "mpe_plugin_grpc"
+path = "src/main.rs"
+
+# 集成测试用的 gRPC 测试服务器（tonic server，暴露 echo unary / server
+# streaming / bidi + server reflection v1）。cargo 为包内 [[bin]] 注入
+# CARGO_BIN_EXE_grpc_test_server。
+[[bin]]
+name = "grpc_test_server"
+path = "src/bin/test_server.rs"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+correctness = { level = "deny", priority = -1 }
+suspicious = { level = "warn", priority = -1 }
+style = { level = "warn", priority = -1 }
+complexity = { level = "warn", priority = -1 }
+perf = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "warn"
+too_many_arguments = "allow"
+type_complexity = "allow"

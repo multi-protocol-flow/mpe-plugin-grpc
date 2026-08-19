@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>gRPC Report Viewer</title>
+</head>
+<body>
+  <div id="root"></div>
+  <!--
+    The script tag must come AFTER #root: the built single-file HTML inlines
+    the bundle as a classic `<script>`, which executes immediately during
+    parsing (unlike vite's original module script which was deferred).
+  -->
+  <script type="module" src="/src/viewer.tsx"></script>
+</body>
+</html>

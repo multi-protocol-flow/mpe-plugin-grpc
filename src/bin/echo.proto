@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package echo;
+
+message EchoMessage {
+  string text = 1;
+  int32 n = 2;
+  map<string, string> attrs = 3;
+  repeated string tags = 4;
+}
+
+service EchoService {
+  rpc Unary(EchoMessage) returns (EchoMessage);
+  rpc ServerStreaming(EchoMessage) returns (stream EchoMessage);
+  rpc ClientStreaming(stream EchoMessage) returns (EchoMessage);
+  rpc BidiStreaming(stream EchoMessage) returns (stream EchoMessage);
+}

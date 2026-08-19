@@ -1,0 +1,13 @@
+{
+  "name": "grpc",
+  "version": "0.1.0",
+  "description": "gRPC protocol plugin: connect/call/close (dynamic proto, server reflection, streaming)",
+  "entry": {
+    "command": "./mpe_plugin_grpc"
+  },
+  "env": {},
+  "permissions": [],
+  "capabilities": { "streaming": true, "single_node": true },
+  "locales": ["zh-CN", "en-US"],
+  "default_locale": "en-US"
+}

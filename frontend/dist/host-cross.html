@@ -1,0 +1,9 @@
+<!doctype html><body><div id=wrap></div>
+<script>
+  const f = document.createElement('iframe');
+  f.id = 'f';
+  f.setAttribute('sandbox', 'allow-scripts');
+  f.src = 'http://127.0.0.1:8933/panel.html';
+  document.getElementById('wrap').appendChild(f);
+</script>
+</body>
