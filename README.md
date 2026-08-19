@@ -207,3 +207,4 @@ mpe run-flow tests/fixtures/flows/grpc_plugin_e2e.json
   `execute_single_node` / `mpe run-node` capability gate
   (`NodePlugin::supports_single_node()` + `SidecarPlugin` passthrough); the
   plugin never needs to know host implementation details.
+# trigger CI
