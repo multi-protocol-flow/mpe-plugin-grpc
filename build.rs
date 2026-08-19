@@ -3,6 +3,15 @@
 //! `mpe_plugin_grpc` binary never links the generated code).
 
 fn main() {
+    // Only compile the test server proto when building the test server binary.
+    // The main plugin binary (mpe_plugin_grpc) never references the generated
+    // code, so skipping proto compilation avoids requiring `protoc` in CI
+    // for normal builds.
+    let bin_name = std::env::var("CARGO_BIN_NAME").unwrap_or_default();
+    if bin_name != "grpc_test_server" {
+        return;
+    }
+
     println!("cargo:rerun-if-changed=src/bin/echo.proto");
     tonic_build::configure()
         .build_server(true)
