@@ -54,6 +54,11 @@ jobs:
           manifest = re.sub(r'"version": "[^"]*"', f'"version": "{version}"', manifest, count=1)
           open("plugin.json", "w", encoding="utf-8").write(manifest)
           EOF
+      - name: Build frontend (panel + viewer)
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
       - name: Build (release)
         run: cargo build --release
       - name: Offline tests (roundtrip + integration)
