@@ -12,6 +12,19 @@ fn main() {
         return;
     }
 
+    // Skip gracefully when protoc is not available (e.g. CI without protoc).
+    // The integration tests that need the generated code are skipped in CI,
+    // so the test server binary is not required there.
+    let has_protoc = std::process::Command::new("protoc")
+        .arg("--version")
+        .output()
+        .map(|o| o.status.success())
+        .unwrap_or(false);
+    if !has_protoc {
+        println!("cargo:warning=protoc not found, skipping echo.proto compilation");
+        return;
+    }
+
     println!("cargo:rerun-if-changed=src/bin/echo.proto");
     tonic_build::configure()
         .build_server(true)
