@@ -60,7 +60,7 @@ jobs:
           npm ci
           npm run build
       - name: Build (release)
-        run: cargo build --release
+        run: cargo build --release --bin mpe_plugin_grpc
       - name: Offline tests (roundtrip only)
         run: cargo test --test roundtrip
       - name: Package zip + sha256
