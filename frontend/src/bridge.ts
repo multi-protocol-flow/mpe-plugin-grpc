@@ -195,16 +195,19 @@ export function initBridge(options: BridgeOptions): () => void {
 
   window.addEventListener('message', handleMessage);
 
-  // Panel auto-resize: report document.body height changes to the host.
+  // Panel auto-resize: report content height changes to the host.
   let observer: ResizeObserver | null = null;
   if (typeof ResizeObserver !== 'undefined') {
+    let lastHeight = 0;
+    const target = document.getElementById('root') || document.body;
     observer = new ResizeObserver(() => {
-      const height = Math.ceil(document.body.scrollHeight);
-      if (Number.isFinite(height) && height > 0) {
+      const height = Math.ceil(target.scrollHeight);
+      if (Number.isFinite(height) && height > 0 && Math.abs(height - lastHeight) >= 2) {
+        lastHeight = height;
         postResize(height);
       }
     });
-    observer.observe(document.body);
+    observer.observe(target);
   }
 
   return () => {

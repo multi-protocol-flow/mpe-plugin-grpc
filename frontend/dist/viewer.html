@@ -7074,13 +7074,16 @@ function initBridge(options) {
   window.addEventListener("message", handleMessage);
   let observer = null;
   if (typeof ResizeObserver !== "undefined") {
+    let lastHeight = 0;
+    const target = document.getElementById("root") || document.body;
     observer = new ResizeObserver(() => {
-      const height = Math.ceil(document.body.scrollHeight);
-      if (Number.isFinite(height) && height > 0) {
+      const height = Math.ceil(target.scrollHeight);
+      if (Number.isFinite(height) && height > 0 && Math.abs(height - lastHeight) >= 2) {
+        lastHeight = height;
         postResize(height);
       }
     });
-    observer.observe(document.body);
+    observer.observe(target);
   }
   return () => {
     window.removeEventListener("message", handleMessage);
@@ -8508,6 +8511,16 @@ main();
   box-sizing: border-box;
 }
 
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
 html,
 body {
   margin: 0;
@@ -8519,7 +8532,8 @@ body {
 }
 
 #root {
-  min-height: 100vh;
+  min-height: auto;
+  height: auto;
 }
 
 .panel {
@@ -9844,21 +9858,34 @@ body {
   align-items: flex-start;
   gap: 8px;
   background: var(--bg-muted);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 12px;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .help-body {
   font-size: 12px;
+  line-height: 1.5;
   color: var(--fg-muted);
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.help-body p {
+  margin: 0;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .help-title {
   font-weight: 600;
   color: var(--fg);
+  margin-bottom: 2px;
 }
 </style>
 </head>

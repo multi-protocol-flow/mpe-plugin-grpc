@@ -48,9 +48,6 @@ pub enum ProtoParseError {
     /// Proto 文件解析Failed
     #[error("failed to parse proto files: {0}")]
     ParseError(String),
-    /// 缺失文件
-    #[error("missing files: {0:?}")]
-    MissingFiles(Vec<String>),
     /// I/O Error
     #[error("I/O Error: {0}")]
     IoError(#[from] std::io::Error),

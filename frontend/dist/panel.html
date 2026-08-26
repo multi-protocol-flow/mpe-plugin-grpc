@@ -7102,13 +7102,16 @@ function initBridge(options) {
   window.addEventListener("message", handleMessage);
   let observer = null;
   if (typeof ResizeObserver !== "undefined") {
+    let lastHeight = 0;
+    const target = document.getElementById("root") || document.body;
     observer = new ResizeObserver(() => {
-      const height = Math.ceil(document.body.scrollHeight);
-      if (Number.isFinite(height) && height > 0) {
+      const height = Math.ceil(target.scrollHeight);
+      if (Number.isFinite(height) && height > 0 && Math.abs(height - lastHeight) >= 2) {
+        lastHeight = height;
         postResize(height);
       }
     });
-    observer.observe(document.body);
+    observer.observe(target);
   }
   return () => {
     window.removeEventListener("message", handleMessage);
@@ -10301,6 +10304,21 @@ function CallPanel({ config, nodes, onChange }) {
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", onClick: () => setGrpcurlCommand(null), className: "btn-link", children: t("panels.common.close") })
       ] })
     ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "field", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "timeout_ms", className: "field-label", children: t("panels.grpcCall.callTimeout") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Input,
+        {
+          id: "timeout_ms",
+          type: "number",
+          min: 1e3,
+          max: 3e5,
+          value: (_e = config.timeout_ms) != null ? _e : "",
+          onChange: (e) => set({ timeout_ms: e.target.value === "" ? void 0 : Number(e.target.value) })
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "hint", children: t("panels.common.timeoutMs") })
+    ] }),
     isClientStreaming && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "col", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "row-between", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { className: "field-label", children: t("panels.grpcCall.messageList") }),
@@ -10416,7 +10434,7 @@ function CallPanel({ config, nodes, onChange }) {
           Textarea,
           {
             id: "request_json",
-            value: (_e = config.request_json) != null ? _e : "",
+            value: (_f = config.request_json) != null ? _f : "",
             onChange: (e) => set({ request_json: e.target.value }),
             placeholder: '{"field": "value"}',
             rows: 5
@@ -10475,27 +10493,12 @@ function CallPanel({ config, nodes, onChange }) {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         MetadataListEditor,
         {
-          entries: (_f = config.metadata) != null ? _f : [],
+          entries: (_g = config.metadata) != null ? _g : [],
           onChange: (entries) => set({ metadata: entries }),
           emptyText: t("panels.grpcCall.noCallMetadata"),
           hint: t("panels.grpcCall.metadataMergeHint")
         }
       )
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "field", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "timeout_ms", className: "field-label", children: t("panels.grpcCall.callTimeout") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Input,
-        {
-          id: "timeout_ms",
-          type: "number",
-          min: 1e3,
-          max: 3e5,
-          value: (_g = config.timeout_ms) != null ? _g : "",
-          onChange: (e) => set({ timeout_ms: e.target.value === "" ? void 0 : Number(e.target.value) })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "hint", children: t("panels.common.timeoutMs") })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "field", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "call_compression_encoding", className: "field-label", children: t("panels.grpcCall.compressionEncoding") }),
@@ -10749,6 +10752,16 @@ main();
   box-sizing: border-box;
 }
 
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
 html,
 body {
   margin: 0;
@@ -10760,7 +10773,8 @@ body {
 }
 
 #root {
-  min-height: 100vh;
+  min-height: auto;
+  height: auto;
 }
 
 .panel {
@@ -12085,21 +12099,34 @@ body {
   align-items: flex-start;
   gap: 8px;
   background: var(--bg-muted);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 12px;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .help-body {
   font-size: 12px;
+  line-height: 1.5;
   color: var(--fg-muted);
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.help-body p {
+  margin: 0;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .help-title {
   font-weight: 600;
   color: var(--fg);
+  margin-bottom: 2px;
 }
 </style>
 </head>

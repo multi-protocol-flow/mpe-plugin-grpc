@@ -2,3 +2,7 @@
 /dist
 *.zip
 *.zip.sha256
+/mpe_plugin_grpc
+/mpe_plugin_grpc.exe
+mpe_plugin_grpc
+mpe_plugin_grpc.exe

@@ -642,6 +642,24 @@ export function CallPanel({ config, nodes, onChange }: CallPanelProps) {
           </div>
         )}
       </div>
+      {/* 调用超时 */}
+      <div className="field">
+        <Label htmlFor="timeout_ms" className="field-label">
+          {t('panels.grpcCall.callTimeout')}
+        </Label>
+        <Input
+          id="timeout_ms"
+          type="number"
+          min={1000}
+          max={300000}
+          value={config.timeout_ms ?? ''}
+          onChange={(e) =>
+            set({ timeout_ms: e.target.value === '' ? undefined : Number(e.target.value) })
+          }
+        />
+        <p className="hint">{t('panels.common.timeoutMs')}</p>
+      </div>
+
 
       {/* 消息列表（Client/Bidi Streaming） */}
       {isClientStreaming && (
@@ -847,24 +865,6 @@ export function CallPanel({ config, nodes, onChange }: CallPanelProps) {
           emptyText={t('panels.grpcCall.noCallMetadata')}
           hint={t('panels.grpcCall.metadataMergeHint')}
         />
-      </div>
-
-      {/* 调用超时 */}
-      <div className="field">
-        <Label htmlFor="timeout_ms" className="field-label">
-          {t('panels.grpcCall.callTimeout')}
-        </Label>
-        <Input
-          id="timeout_ms"
-          type="number"
-          min={1000}
-          max={300000}
-          value={config.timeout_ms ?? ''}
-          onChange={(e) =>
-            set({ timeout_ms: e.target.value === '' ? undefined : Number(e.target.value) })
-          }
-        />
-        <p className="hint">{t('panels.common.timeoutMs')}</p>
       </div>
 
       {/* 压缩编码 */}
