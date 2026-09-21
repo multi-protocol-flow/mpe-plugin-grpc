@@ -1,6 +1,6 @@
 {
   "name": "grpc",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "gRPC protocol plugin: connect/call/close (dynamic proto, server reflection, streaming)",
   "entry": {
     "command": "./mpe_plugin_grpc"
