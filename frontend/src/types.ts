@@ -17,6 +17,8 @@ export interface PluginIframeInitPayload {
   host_api?: Record<string, unknown>;
   nodeType: string;
   locale: string;
+  /** Host-resolved theme; absent on older hosts → fall back to prefers-color-scheme. */
+  theme?: 'light' | 'dark';
   nodes?: GrpcNodeSnapshot[];
   /** viewer only: the execution report node object */
   node_report?: NodeReport;

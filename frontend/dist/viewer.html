@@ -7006,6 +7006,14 @@ var m = reactDomExports;
   m.hydrateRoot;
 }
 const pendingActions = /* @__PURE__ */ new Map();
+function applyTheme(theme) {
+  const root = document.documentElement;
+  root.dataset.theme = theme;
+  root.style.colorScheme = theme;
+}
+function isTheme(value) {
+  return value === "light" || value === "dark";
+}
 function post(type, payload = {}) {
   try {
     window.parent.postMessage({ type, payload }, "*");
@@ -7039,6 +7047,9 @@ function initBridge(options) {
         typeof initPayload.nodeType === "string" ? initPayload.nodeType : "";
         Array.isArray(initPayload.nodes) ? initPayload.nodes : void 0;
         initPayload.config && typeof initPayload.config === "object" ? initPayload.config : {};
+        if (isTheme(initPayload.theme)) {
+          applyTheme(initPayload.theme);
+        }
         options.onInit(initPayload);
         postReady();
         break;
@@ -7059,6 +7070,12 @@ function initBridge(options) {
           pending.reject(new Error(payload.error));
         } else {
           pending.resolve(payload.result);
+        }
+        break;
+      }
+      case "themeChanged": {
+        if (isTheme(payload.theme)) {
+          applyTheme(payload.theme);
         }
         break;
       }
@@ -8457,6 +8474,10 @@ main();
  * ========================================================================== */
 
 :root {
+  /* Light/dark is driven by the host-provided `data-theme`
+     (docs/plugin-frontend-theme.md); `color-scheme` makes UA-native widgets
+     (select popup / options, checkbox, scrollbars) follow. */
+  color-scheme: light;
   --bg: #ffffff;
   --bg-muted: #f6f7f9;
   --fg: #1f2328;
@@ -8481,8 +8502,14 @@ main();
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
 
+/* Fallback: host did not send `theme` (older host / standalone browser debug)
+   → follow the OS. Once `data-theme` exists this block no longer matches and
+   the authoritative block below takes over. The dark values must be kept
+   identical between the two blocks — CSS cannot share a declaration block
+   across a media query and a selector. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
+    color-scheme: dark;
     --bg: #191c20;
     --bg-muted: #23272d;
     --fg: #e6e6e6;
@@ -8505,6 +8532,32 @@ main();
     --info: #38bdf8;
     --code-bg: #14161a;
   }
+}
+
+/* Authoritative: the host-resolved theme (identical to the fallback block). */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #191c20;
+  --bg-muted: #23272d;
+  --fg: #e6e6e6;
+  --fg-muted: #9ca3af;
+  --fg-soft: #6b7280;
+  --border: #3a3f47;
+  --accent: #a78bfa;
+  --accent-strong: #c4b5fd;
+  --accent-soft: #2b2344;
+  --accent-border: #463a6b;
+  --danger: #f87171;
+  --danger-soft: #3a1d1d;
+  --danger-border: #7f2a2a;
+  --ok: #4ade80;
+  --ok-soft: #17301d;
+  --ok-border: #2a5a35;
+  --warn: #fbbf24;
+  --warn-soft: #332a12;
+  --warn-border: #6b5518;
+  --info: #38bdf8;
+  --code-bg: #14161a;
 }
 
 * {
@@ -8646,6 +8699,28 @@ body {
   font: inherit;
 }
 
+/*
+ * Native `<select>` chrome (arrow button, inner shading) is UA-drawn and does
+ * not follow our palette — on a dark background the default arrow ends up
+ * invisible or the control keeps a light native look. Drop the native
+ * appearance and draw the caret ourselves with two gradients, so its color
+ * comes from the theme variable and flips with light/dark.
+ */
+.select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 26px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--fg-muted) 50%),
+    linear-gradient(135deg, var(--fg-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 15px) calc(50% - 2px),
+    calc(100% - 10px) calc(50% - 2px);
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
 .input:focus,
 .textarea:focus,
 .select:focus {
@@ -8659,6 +8734,14 @@ body {
   font-family: var(--mono);
   font-size: 12px;
   line-height: 1.5;
+}
+
+/* The native <select> popup list is UA-drawn: give it explicit colors.
+   Otherwise a dark palette leaves a light (white) popup with near-white
+   inherited text → unreadable "white on white". */
+option {
+  background: var(--bg);
+  color: var(--fg);
 }
 
 .input.mono,

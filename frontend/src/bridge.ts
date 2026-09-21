@@ -3,9 +3,10 @@
  *
  * Protocol matches the host's `src/types/plugin-iframe.ts`:
  *
- *   host -> iframe : `init` {config, variables, host_api, nodeType, locale, nodes?, node_report?}
+ *   host -> iframe : `init` {config, variables, host_api, nodeType, locale, theme?, nodes?, node_report?}
  *                    `configUpdated` {config}
  *                    `actionResult` {requestId, result, error?}
+ *                    `themeChanged` {theme}
  *                    `stream` {call_id, kind: 'message'|'error', data}   (viewer only)
  *   iframe -> host : `ready` {}, `configChanged` {config}, `resize` {height},
  *                    `error` {message}, `requestAction` {requestId, action, params}
@@ -43,6 +44,28 @@ let nodes: PluginIframeInitPayload['nodes'] = undefined;
 let initConfig: Record<string, unknown> = {};
 
 const pendingActions = new Map<string, PendingAction>();
+
+// --- theme ----------------------------------------------------------------
+
+/**
+ * Apply the host-resolved theme to the document root.
+ *
+ * `data-theme` drives the plugin stylesheet (`:root[data-theme="dark"]`);
+ * `color-scheme` makes UA-native widgets (select popup / options, checkbox,
+ * range, scrollbars) follow, which is what fixes white-on-white controls.
+ * When the host never sends `theme`, the stylesheet's
+ * `@media (prefers-color-scheme: dark)` fallback keeps working — we simply
+ * never set the attribute.
+ */
+function applyTheme(theme: 'light' | 'dark'): void {
+  const root = document.documentElement;
+  root.dataset.theme = theme;
+  root.style.colorScheme = theme;
+}
+
+function isTheme(value: unknown): value is 'light' | 'dark' {
+  return value === 'light' || value === 'dark';
+}
 
 // --- outbound -------------------------------------------------------------
 
@@ -157,6 +180,9 @@ export function initBridge(options: BridgeOptions): () => void {
           initPayload.config && typeof initPayload.config === 'object'
             ? initPayload.config
             : {};
+        if (isTheme(initPayload.theme)) {
+          applyTheme(initPayload.theme);
+        }
         options.onInit(initPayload);
         postReady();
         break;
@@ -178,6 +204,13 @@ export function initBridge(options: BridgeOptions): () => void {
           pending.reject(new Error(payload.error));
         } else {
           pending.resolve(payload.result);
+        }
+        break;
+      }
+      case 'themeChanged': {
+        // Host switched light/dark while the panel is open → re-skin in place.
+        if (isTheme(payload.theme)) {
+          applyTheme(payload.theme);
         }
         break;
       }
