@@ -10773,6 +10773,17 @@ main();
     --info: #38bdf8;
     --code-bg: #14161a;
   }
+
+  :root:not([data-theme]) select,
+  :root:not([data-theme]) .select,
+  :root:not([data-theme]) select option,
+  :root:not([data-theme]) .select option,
+  :root:not([data-theme]) option,
+  :root:not([data-theme]) optgroup {
+    color-scheme: dark;
+    background-color: #191c20 !important;
+    color: #e6e6e6 !important;
+  }
 }
 
 /* Authoritative: the host-resolved theme (identical to the fallback block). */
@@ -10799,6 +10810,28 @@ main();
   --warn-border: #6b5518;
   --info: #38bdf8;
   --code-bg: #14161a;
+}
+
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] .select,
+:root[data-theme="dark"] select option,
+:root[data-theme="dark"] .select option,
+:root[data-theme="dark"] option,
+:root[data-theme="dark"] optgroup {
+  color-scheme: dark;
+  background-color: #191c20 !important;
+  color: #e6e6e6 !important;
+}
+
+:root[data-theme="light"] select,
+:root[data-theme="light"] .select,
+:root[data-theme="light"] select option,
+:root[data-theme="light"] .select option,
+:root[data-theme="light"] option,
+:root[data-theme="light"] optgroup {
+  color-scheme: light;
+  background-color: #ffffff !important;
+  color: #1f2328 !important;
 }
 
 * {
@@ -10930,12 +10963,13 @@ body {
 
 .input,
 .textarea,
-.select {
+.select,
+select {
   width: 100%;
   padding: 6px 8px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--fg);
   font: inherit;
 }
@@ -10947,7 +10981,8 @@ body {
  * appearance and draw the caret ourselves with two gradients, so its color
  * comes from the theme variable and flips with light/dark.
  */
-.select {
+.select,
+select {
   -webkit-appearance: none;
   appearance: none;
   padding-right: 26px;
@@ -10964,7 +10999,8 @@ body {
 
 .input:focus,
 .textarea:focus,
-.select:focus {
+.select:focus,
+select:focus {
   outline: 2px solid var(--accent-border);
   border-color: var(--accent);
 }
@@ -10980,19 +11016,24 @@ body {
 /* The native <select> popup list is UA-drawn: give it explicit colors.
    Otherwise a dark palette leaves a light (white) popup with near-white
    inherited text → unreadable "white on white". */
-option {
-  background: var(--bg);
+select option,
+.select option,
+option,
+optgroup {
+  background-color: var(--bg);
   color: var(--fg);
 }
 
 .input.mono,
-.select.mono {
+.select.mono,
+select.mono {
   font-family: var(--mono);
   font-size: 12px;
 }
 
 .input-sm,
-.select-sm {
+.select-sm,
+select.sm {
   height: 28px;
   font-size: 12px;
 }
